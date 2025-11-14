@@ -57,7 +57,7 @@ export async function createInitialPet(userId) {
     user_id: userId,
     type: 'dog', // 初期は犬に設定
     name: 'たまご', // 初期名は「たまご」
-    mbti_params: { "Te": 0, "Fi": 0, "Ni": 0, "Se": 0, "Fe": 0, "Ti": 0, "Ne": 0, "Si": 0 },
+    mbti_params: { Te: 0, Fi: 0, Ni: 0, Se: 0, Fe: 0, Ti: 0, Ne: 0, Si: 0 },
     growth_points: 0,
     learning_logs: [],
     accessories: [],
@@ -85,3 +85,28 @@ export async function updatePetName(petId, newName) {
   if (error) throw error;
   return data;
 }
+
+// リマインダーを登録
+export async function createReminder(reminder) {
+  const { data, error } = await supabase
+    .from('reminders')
+    .insert([reminder])
+    .select()
+    .single();
+
+  if (error) throw error;
+  return data;
+}
+
+// ユーザーのリマインダーを取得
+export async function getReminders(userId) {
+  const { data, error } = await supabase
+    .from('reminders')
+    .select('*')
+    .eq('user_id', userId)
+    .order('due_time', { ascending: true });
+
+  if (error) throw error;
+  return data;
+}
+

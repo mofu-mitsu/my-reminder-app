@@ -1,13 +1,41 @@
 import React from 'react';
 import { useAuth } from './hooks/useAuth';
-import { usePet } from './hooks/usePet'; // 新しいフックをインポート
+import { usePet } from './hooks/usePet';
+import { useReminders } from './hooks/useReminders'; // 新しいフックをインポート
 import { LoginForm } from './components/LoginForm';
-import { PetDisplay } from './components/PetDisplay'; // PetDisplayをインポート
+import { PetDisplay } from './components/PetDisplay';
+import { ReminderForm } from './components/ReminderForm'; // フォームをインポート
 import { signOut } from './services/supabase';
+
+function ReminderList({ reminders, loading, error }) {
+  if (loading) return <p>リマインダーを読み込み中...📝</p>;
+  if (error) return <p style={{ color: 'red' }}>リマインダーの読み込みエラー: {error}</p>;
+  if (reminders.length === 0) return <p>まだリマインダーがないよ！登録してみよう！</p>;
+
+  return (
+    <div style={{ textAlign: 'left', maxWidth: '600px', margin: '20px auto' }}>
+      <h3>登録済みのリマインダー</h3>
+      {reminders.map(r => (
+        <div key={r.id} style={{ padding: '10px', borderBottom: '1px solid #eee', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <div>
+            <strong>{r.title}</strong> ({r.category})
+            <p style={{ margin: '0', fontSize: '0.8em', color: '#888' }}>
+              {new Date(r.due_time).toLocaleString()}
+            </p>
+          </div>
+          <span style={{ color: r.achieved ? 'green' : 'orange' }}>
+            {r.achieved ? '達成済' : '未達成'}
+          </span>
+        </div>
+      ))}
+    </div>
+  );
+}
 
 function App() {
   const { session, user, loading } = useAuth();
-  const { pet, loading: petLoading, error: petError } = usePet(user?.id); // ユーザーIDを渡す
+  const { pet, loading: petLoading, error: petError } = usePet(user?.id);
+  const { reminders, loading: remindersLoading, error: remindersError, fetchReminders } = useReminders(user?.id);
 
   if (loading) {
     return <div>ロード中...🧸</div>;
@@ -29,10 +57,13 @@ function App() {
         <PetDisplay pet={pet} />
       )}
 
+      <ReminderForm userId={user.id} onReminderCreated={fetchReminders} />
+      
+      <ReminderList reminders={reminders} loading={remindersLoading} error={remindersError} />
+
       <button onClick={signOut} style={{ padding: '10px 15px', backgroundColor: '#ccc', color: 'black', border: 'none', borderRadius: '5px', cursor: 'pointer', marginTop: '20px' }}>
         ログアウト
       </button>
-      {/* ここにリマインダーやその他のコンポーネントを配置するよ！ */}
     </div>
   );
 }
