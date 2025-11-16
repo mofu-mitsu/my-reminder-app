@@ -1,10 +1,10 @@
 import React from 'react';
 import { useAuth } from './hooks/useAuth';
 import { usePet } from './hooks/usePet';
-import { useReminders } from './hooks/useReminders'; // 新しいフックをインポート
+import { useReminders } from './hooks/useReminders';
 import { LoginForm } from './components/LoginForm';
 import { PetDisplay } from './components/PetDisplay';
-import { ReminderForm } from './components/ReminderForm'; // フォームをインポート
+import { ReminderForm } from './components/ReminderForm';
 import { signOut } from './services/supabase';
 
 function ReminderList({ reminders, loading, error }) {
@@ -41,6 +41,7 @@ function App() {
     return <div>ロード中...🧸</div>;
   }
 
+  if (!session) {
     return <LoginForm />;
   }
 
@@ -69,4 +70,3 @@ function App() {
 }
 
 export default App;
-
