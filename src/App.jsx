@@ -4,7 +4,7 @@ import { usePet } from './hooks/usePet';
 import { useReminders } from './hooks/useReminders.jsx';
 import { LoginForm } from './components/LoginForm.jsx';
 import { PetDisplay } from './components/PetDisplay.jsx';
-import { ReminderForm } from './components/ReminderForm';
+import { ReminderForm } from './components/ReminderForm.jsx';
 import { signOut } from './services/supabase';
 
 function ReminderList({ reminders, loading, error }) {
