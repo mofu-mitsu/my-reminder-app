@@ -7,6 +7,7 @@ export function useReminders(userId) {
   const [error, setError] = useState(null);
 
   const fetchReminders = async () => {
+    if (!userId) {
       setReminders([]);
       setLoading(false);
       return;
@@ -23,7 +24,6 @@ export function useReminders(userId) {
       setLoading(false);
     }
   };
-
   useEffect(() => {
     fetchReminders();
     

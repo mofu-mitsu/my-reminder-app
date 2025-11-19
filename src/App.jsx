@@ -2,7 +2,7 @@ import React from 'react';
 import { useAuth } from './hooks/useAuth';
 import { usePet } from './hooks/usePet';
 import { useReminders } from './hooks/useReminders.jsx';
-import { LoginForm } from './components/LoginForm';
+import { LoginForm } from './components/LoginForm.jsx';
 import { PetDisplay } from './components/PetDisplay';
 import { ReminderForm } from './components/ReminderForm';
 import { signOut } from './services/supabase';
