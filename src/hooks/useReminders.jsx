@@ -24,6 +24,7 @@ export function useReminders(userId) {
       setLoading(false);
     }
   };
+
   useEffect(() => {
     fetchReminders();
     
@@ -43,4 +44,3 @@ export function useReminders(userId) {
 
   return { reminders, loading, error, fetchReminders };
 }
-

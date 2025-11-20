@@ -54,6 +54,8 @@ export function LoginForm() {
         </button>
       </form>
       <button
+        type='button'
+        onClick={() => setIsSignUp(prev => !prev)}
         style={{ marginTop: '10px', background: 'none', border: 'none', color: '#ff69b4', cursor: 'pointer', textDecoration: 'underline' }}
       >
         {isSignUp ? 'アカウントをお持ちの方はこちら' : 'アカウントを作成する'}
