@@ -16,6 +16,7 @@ const CATEGORY_TRAIT_DELTAS = {
   walk: { Se: 2, Fe: 1 },
   sleep: { Si: 2, Ni: 1 },
   umbrella: { Ni: 2, Si: 1 },
+  focus: { Ti: 3, Ni: 1 },
   custom: { Ne: 1, Fi: 1 },
 };
 
@@ -32,24 +33,37 @@ export function normalizeTraits(rawTraits = {}) {
 }
 
 export function calculateMBTIScore(traits = {}) {
-  const normalized = normalizeTraits(traits);
+  const t = normalizeTraits(traits);
 
-  const letters = [
-    normalized.Se + normalized.Ne >= normalized.Si + normalized.Ni ? 'E' : 'I',
-    normalized.Si + normalized.Se >= normalized.Ni + normalized.Ne ? 'S' : 'N',
-    normalized.Te + normalized.Fe >= normalized.Ti + normalized.Fi ? 'T' : 'F',
-    normalized.J !== undefined
-      ? normalized.J >= 0
-        ? 'J'
-        : 'P'
-      : normalized.Te + normalized.Ti >= normalized.Ne + normalized.Se
-      ? 'J'
-      : 'P',
-  ];
+  const extScore = t.Se + t.Ne + t.Fe + t.Te;
+  const intScore = t.Si + t.Ni + t.Fi + t.Ti;
+  const IE = extScore >= intScore ? 'E' : 'I';
+
+  const SScore = t.Si + t.Se;
+  const NScore = t.Ni + t.Ne;
+  const SN = SScore >= NScore ? 'S' : 'N';
+
+  const TScore = t.Ti + t.Te;
+  const FScore = t.Fi + t.Fe;
+  const TF = TScore >= FScore ? 'T' : 'F';
+
+  const extJudging = t.Fe + t.Te;
+  const extPerceiving = t.Se + t.Ne;
+  const JP = extJudging >= extPerceiving ? 'J' : 'P';
 
   return {
-    mbti: letters.join(''),
-    traits: normalized,
+    mbti: IE + SN + TF + JP,
+    traits: t,
+    details: {
+      extScore,
+      intScore,
+      SScore,
+      NScore,
+      TScore,
+      FScore,
+      extJudging,
+      extPerceiving,
+    },
   };
 }
 

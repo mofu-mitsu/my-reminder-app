@@ -8,6 +8,7 @@ const CATEGORIES = [
   { value: 'walk', label: '散歩 🚶‍♀️' },
   { value: 'sleep', label: '寝る時間 😴' },
   { value: 'umbrella', label: '傘 ☔' },
+  { value: 'focus', label: '思考タイム / 勉強 🧠' },
   { value: 'custom', label: 'その他 📝' },
 ];
 
