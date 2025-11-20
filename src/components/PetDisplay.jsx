@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { updatePetName } from '../services/supabase';
 import { calculateMBTIScore } from '../utils/mbtiCalculator';
+import { PetAvatar } from './PetAvatar.jsx';
 
 export function PetDisplay({ pet }) {
   const [isEditing, setIsEditing] = useState(false);
@@ -92,14 +93,7 @@ export function PetDisplay({ pet }) {
         <p style={{ color: 'red', fontSize: '0.8em' }}>{updateError}</p>
       )}
 
-      <p style={{ fontSize: '1.2em', color: '#ff69b4' }}>
-        {pet.type === 'dog'
-          ? '🐶'
-          : pet.type === 'cat'
-          ? '🐱'
-          : '🐦'}{' '}
-        {pet.type}
-      </p>
+      <PetAvatar type={pet.type} growthPoints={pet.growth_points} mbti={mbti} />
 
       <p>成長ポイント: {pet.growth_points}</p>
       <p>性格(MBTI): {mbti}</p>

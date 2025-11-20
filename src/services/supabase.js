@@ -114,7 +114,7 @@ export async function getReminders(userId) {
 export async function completeReminder(reminderId) {
   const { data, error } = await supabase
     .from('reminders')
-    .update({ achieved: true, updated_at: new Date().toISOString() })
+    .update({ achieved: true })
     .eq('id', reminderId)
     .select()
     .single();
