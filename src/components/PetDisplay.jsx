@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { updatePetName } from '../services/supabase';
+import { calculateMBTIScore } from '../utils/mbtiCalculator';
 
 export function PetDisplay({ pet }) {
   const [isEditing, setIsEditing] = useState(false);
@@ -37,11 +38,7 @@ export function PetDisplay({ pet }) {
     }
   };
 
-  const calculateMBTI = () => {
-    return 'INFP (仮)';
-  };
-
-  const mbti = calculateMBTI();
+  const { mbti, traits } = calculateMBTIScore(pet.mbti_params);
 
   return (
     <div style={{
@@ -106,6 +103,9 @@ export function PetDisplay({ pet }) {
 
       <p>成長ポイント: {pet.growth_points}</p>
       <p>性格(MBTI): {mbti}</p>
+      <p style={{ fontSize: '0.9em', color: '#555' }}>
+        {`Te:${traits.Te} / Fi:${traits.Fi} / Ni:${traits.Ni} / Se:${traits.Se}`}
+      </p>
     </div>
   );
 }

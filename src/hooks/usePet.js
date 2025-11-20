@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { getPet, createInitialPet } from '../services/supabase';
 
 export function usePet(userId) {
@@ -6,34 +6,35 @@ export function usePet(userId) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  useEffect(() => {
-    const fetchPet = async () => {
-      if (!userId) {
-        setLoading(false);
-        return;
-      }
+  const fetchPet = useCallback(async () => {
+    if (!userId) {
+      setPet(null);
+      setLoading(false);
+      return;
+    }
 
-      setLoading(true);
-      setError(null);
+    setLoading(true);
+    setError(null);
+    
+    try {
+      let petData = await getPet(userId);
       
-      try {
-        let petData = await getPet(userId);
-        
-        // If no pet exists, create an initial one
-        if (!petData) {
-          petData = await createInitialPet(userId);
-        }
-        
-        setPet(petData);
-      } catch (err) {
-        setError(err.message);
-      } finally {
-        setLoading(false);
+      // If no pet exists, create an initial one
+      if (!petData) {
+        petData = await createInitialPet(userId);
       }
-    };
-
-    fetchPet();
+      
+      setPet(petData);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
   }, [userId]);
 
-  return { pet, loading, error };
+  useEffect(() => {
+    fetchPet();
+  }, [fetchPet]);
+
+  return { pet, loading, error, refreshPet: fetchPet };
 }

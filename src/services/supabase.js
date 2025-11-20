@@ -1,4 +1,5 @@
 import { createClient } from '@supabase/supabase-js';
+import { getCategoryTraitDelta, applyTraitDelta } from '../utils/mbtiCalculator';
 
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
 const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
@@ -105,6 +106,46 @@ export async function getReminders(userId) {
     .select('*')
     .eq('user_id', userId)
     .order('due_time', { ascending: true });
+
+  if (error) throw error;
+  return data;
+}
+
+export async function completeReminder(reminderId) {
+  const { data, error } = await supabase
+    .from('reminders')
+    .update({ achieved: true, updated_at: new Date().toISOString() })
+    .eq('id', reminderId)
+    .select()
+    .single();
+
+  if (error) throw error;
+  return data;
+}
+
+export async function rewardPetForReminder(petId, category) {
+  const { data: currentPet, error: fetchError } = await supabase
+    .from('pets')
+    .select('*')
+    .eq('id', petId)
+    .single();
+
+  if (fetchError) throw fetchError;
+
+  const delta = getCategoryTraitDelta(category);
+  const updatedTraits = applyTraitDelta(currentPet.mbti_params, delta);
+  const newGrowth = (currentPet.growth_points ?? 0) + 1;
+
+  const { data, error } = await supabase
+    .from('pets')
+    .update({
+      mbti_params: updatedTraits,
+      growth_points: newGrowth,
+      updated_at: new Date().toISOString(),
+    })
+    .eq('id', petId)
+    .select()
+    .single();
 
   if (error) throw error;
   return data;
