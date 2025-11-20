@@ -151,3 +151,37 @@ export async function rewardPetForReminder(petId, category) {
   return data;
 }
 
+const generateLogId = () => {
+  if (typeof crypto !== 'undefined' && crypto.randomUUID) {
+    return crypto.randomUUID();
+  }
+  return `log_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
+};
+
+export async function appendLearningLog(petId, entry) {
+  const { data: pet, error: fetchError } = await supabase
+    .from('pets')
+    .select('learning_logs')
+    .eq('id', petId)
+    .single();
+
+  if (fetchError) throw fetchError;
+
+  const logs = Array.isArray(pet.learning_logs) ? pet.learning_logs : [];
+  const logEntry = {
+    id: generateLogId(),
+    created_at: new Date().toISOString(),
+    ...entry,
+  };
+
+  const { data, error } = await supabase
+    .from('pets')
+    .update({ learning_logs: [...logs, logEntry] })
+    .eq('id', petId)
+    .select('learning_logs')
+    .single();
+
+  if (error) throw error;
+  return data.learning_logs;
+}
+

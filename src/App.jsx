@@ -6,6 +6,7 @@ import { LoginForm } from './components/LoginForm.jsx';
 import { PetDisplay } from './components/PetDisplay.jsx';
 import { ReminderForm } from './components/ReminderForm.jsx';
 import { WeatherReminder } from './components/WeatherReminder.jsx';
+import { LearningLogPanel } from './components/LearningLogPanel.jsx';
 import { signOut } from './services/supabase';
 
 import { completeReminder, rewardPetForReminder } from './services/supabase';
@@ -103,6 +104,10 @@ function App() {
         <p style={{ color: 'red' }}>ペットの読み込みエラー: {petError}</p>
       ) : (
         <PetDisplay pet={pet} />
+      )}
+
+      {!petLoading && !petError && pet && (
+        <LearningLogPanel pet={pet} onUpdated={refreshPet} />
       )}
 
       <ReminderForm userId={user.id} onReminderCreated={fetchReminders} />
