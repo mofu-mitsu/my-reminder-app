@@ -8,7 +8,12 @@ const toneOptions = [
   { value: 'calm', label: '落ち着いたアドバイス' },
 ];
 
-export function LearningLogPanel({ pet, onUpdated }) {
+const toneLabelMap = toneOptions.reduce((acc, option) => {
+  acc[option.value] = option.label;
+  return acc;
+}, {});
+
+export function LearningLogPanel({ pet, onUpdated, learningCost = 0 }) {
   const [message, setMessage] = useState('');
   const [tone, setTone] = useState('praise');
   const [tags, setTags] = useState('');
@@ -27,6 +32,10 @@ export function LearningLogPanel({ pet, onUpdated }) {
       setStatus('文章を入力してね！');
       return;
     }
+    if ((pet.growth_points ?? 0) < learningCost) {
+      setStatus(`成長ポイントが足りないよ！（必要: ${learningCost}）`);
+      return;
+    }
 
     setLoading(true);
     setStatus('AIに覚えさせてるよ…🧠');
@@ -39,7 +48,7 @@ export function LearningLogPanel({ pet, onUpdated }) {
           .split(',')
           .map(t => t.trim())
           .filter(Boolean),
-      });
+      }, { cost: learningCost });
 
       setMessage('');
       setTags('');
@@ -63,8 +72,13 @@ export function LearningLogPanel({ pet, onUpdated }) {
     }}>
       <h3>AI学習ログ 🧠</h3>
       <p style={{ marginTop: 0, fontSize: '0.9em', color: '#666' }}>
-        ペットに覚えてほしい言葉や口癖を追加すると、将来のAI会話で個性に反映しやすくなるよ！
+        ペットに覚えてほしい言葉や口癖を追加すると、AI会話に反映されるよ！
       </p>
+      {learningCost > 0 && (
+        <p style={{ marginTop: '-4px', fontSize: '0.8em', color: '#9c27b0' }}>
+          1フレーズ覚えるのに {learningCost} pt 消費（現在: {pet?.growth_points ?? 0} pt）
+        </p>
+      )}
       <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
         <textarea
           value={message}
@@ -129,7 +143,7 @@ export function LearningLogPanel({ pet, onUpdated }) {
               }}>
                 <p style={{ margin: 0 }}>{log.text}</p>
                 <div style={{ marginTop: '6px', fontSize: '0.75em', color: '#666', display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap', gap: '6px' }}>
-                  <span>トーン: {log.tone || '不明'}</span>
+                  <span>トーン: {toneLabelMap[log.tone] || log.tone || '未設定'}</span>
                   {log.tags?.length > 0 && <span>タグ: {log.tags.join(', ')}</span>}
                 </div>
               </li>

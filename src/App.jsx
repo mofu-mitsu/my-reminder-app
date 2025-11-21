@@ -2,14 +2,16 @@ import React from 'react';
 import { useAuth } from './hooks/useAuth';
 import { usePet } from './hooks/usePet';
 import { useReminders } from './hooks/useReminders.jsx';
+import { useOwnerName } from './hooks/useOwnerName';
+import { calculateMBTIScore } from './utils/mbtiCalculator';
 import { LoginForm } from './components/LoginForm.jsx';
 import { PetDisplay } from './components/PetDisplay.jsx';
 import { ReminderForm } from './components/ReminderForm.jsx';
 import { WeatherReminder } from './components/WeatherReminder.jsx';
 import { LearningLogPanel } from './components/LearningLogPanel.jsx';
-import { signOut } from './services/supabase';
-
-import { completeReminder, rewardPetForReminder } from './services/supabase';
+import { PetChat } from './components/PetChat.jsx';
+import { OwnerSettings } from './components/OwnerSettings.jsx';
+import { signOut, completeReminder, rewardPetForReminder } from './services/supabase';
 
 function ReminderList({ reminders, loading, error, petId, onRefresh, onPetUpdate }) {
   const [completingId, setCompletingId] = React.useState(null);
@@ -80,10 +82,27 @@ function ReminderList({ reminders, loading, error, petId, onRefresh, onPetUpdate
   );
 }
 
+const tabs = [
+  { id: 'pet', label: 'ペット' },
+  { id: 'reminders', label: 'リマインダー' },
+  { id: 'learning', label: '学習' },
+  { id: 'chat', label: '会話' },
+];
+
+const LEARNING_COST = 3;
+
 function App() {
   const { session, user, loading } = useAuth();
   const { pet, loading: petLoading, error: petError, refreshPet } = usePet(user?.id);
   const { reminders, loading: remindersLoading, error: remindersError, fetchReminders } = useReminders(user?.id);
+  const { ownerName, updateOwnerName } = useOwnerName();
+  const [activeTab, setActiveTab] = React.useState('pet');
+
+  const petForChat = React.useMemo(() => {
+    if (!pet) return null;
+    const { mbti } = calculateMBTIScore(pet.mbti_params);
+    return { ...pet, mbti };
+  }, [pet]);
 
   if (loading) {
     return <div>ロード中...🧸</div>;
@@ -94,37 +113,78 @@ function App() {
   }
 
   return (
-    <div style={{ padding: '20px' }}>
-      <h1>リマインダーアプリへようこそ！🫶</h1>
-      <p>ログインユーザー: {session.user.email}</p>
-      
-      {petLoading ? (
-        <p>ペットを読み込み中...🐱</p>
-      ) : petError ? (
-        <p style={{ color: 'red' }}>ペットの読み込みエラー: {petError}</p>
-      ) : (
-        <PetDisplay pet={pet} />
-      )}
+    <div className="app-shell">
+      <header className="app-header">
+        <div>
+          <h1>AIペットリマインダー 🧸</h1>
+          <p className="app-subtitle">ログイン中: {session.user.email}</p>
+        </div>
+        <button onClick={signOut} className="ghost-btn">ログアウト</button>
+      </header>
 
-      {!petLoading && !petError && pet && (
-        <LearningLogPanel pet={pet} onUpdated={refreshPet} />
-      )}
+      <nav className="app-tabs">
+        {tabs.map(tab => (
+          <button
+            key={tab.id}
+            className={activeTab === tab.id ? 'tab-btn active' : 'tab-btn'}
+            onClick={() => setActiveTab(tab.id)}
+          >
+            {tab.label}
+          </button>
+        ))}
+      </nav>
 
-      <ReminderForm userId={user.id} onReminderCreated={fetchReminders} />
-      <WeatherReminder userId={user.id} onReminderCreated={fetchReminders} />
-      
-      <ReminderList
-        reminders={reminders}
-        loading={remindersLoading}
-        error={remindersError}
-        petId={pet?.id}
-        onRefresh={fetchReminders}
-        onPetUpdate={refreshPet}
-      />
+      <div className="app-content">
+        {activeTab === 'pet' && (
+          <>
+            {petLoading ? (
+              <p>ペットを読み込み中...🐱</p>
+            ) : petError ? (
+              <p style={{ color: 'red' }}>ペットの読み込みエラー: {petError}</p>
+            ) : (
+              <>
+                <PetDisplay pet={pet} ownerName={ownerName} />
+                <OwnerSettings ownerName={ownerName} onSave={updateOwnerName} />
+              </>
+            )}
+          </>
+        )}
 
-      <button onClick={signOut} style={{ padding: '10px 15px', backgroundColor: '#ccc', color: 'black', border: 'none', borderRadius: '5px', cursor: 'pointer', marginTop: '20px' }}>
-        ログアウト
-      </button>
+        {activeTab === 'reminders' && (
+          <>
+            <ReminderForm userId={user.id} onReminderCreated={fetchReminders} />
+            <WeatherReminder userId={user.id} onReminderCreated={fetchReminders} />
+            <ReminderList
+              reminders={reminders}
+              loading={remindersLoading}
+              error={remindersError}
+              petId={pet?.id}
+              onRefresh={fetchReminders}
+              onPetUpdate={refreshPet}
+            />
+          </>
+        )}
+
+        {activeTab === 'learning' && (
+          <>
+            {pet ? (
+              <LearningLogPanel pet={pet} onUpdated={refreshPet} learningCost={LEARNING_COST} />
+            ) : (
+              <p>ペット情報を読み込み中…</p>
+            )}
+          </>
+        )}
+
+        {activeTab === 'chat' && (
+          <>
+            {petForChat ? (
+              <PetChat pet={petForChat} ownerName={ownerName} />
+            ) : (
+              <p>ペットを読み込み中…</p>
+            )}
+          </>
+        )}
+      </div>
     </div>
   );
 }

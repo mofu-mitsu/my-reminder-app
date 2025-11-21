@@ -3,7 +3,7 @@ import { updatePetName } from '../services/supabase';
 import { calculateMBTIScore } from '../utils/mbtiCalculator';
 import { PetAvatar } from './PetAvatar.jsx';
 
-export function PetDisplay({ pet }) {
+export function PetDisplay({ pet, ownerName }) {
   const [isEditing, setIsEditing] = useState(false);
   const [newName, setNewName] = useState(pet?.name ?? '');
   const [updateError, setUpdateError] = useState(null);
@@ -93,7 +93,10 @@ export function PetDisplay({ pet }) {
         <p style={{ color: 'red', fontSize: '0.8em' }}>{updateError}</p>
       )}
 
-      <PetAvatar type={pet.type} growthPoints={pet.growth_points} mbti={mbti} />
+      <p style={{ color: '#999', marginTop: '-4px' }}>
+        {ownerName ? `${ownerName} の相棒` : 'ご主人さま大好きだよ'}
+      </p>
+      <PetAvatar type={pet.type} mbti={mbti} />
 
       <p>成長ポイント: {pet.growth_points}</p>
       <p>性格(MBTI): {mbti}</p>

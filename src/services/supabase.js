@@ -158,16 +158,22 @@ const generateLogId = () => {
   return `log_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
 };
 
-export async function appendLearningLog(petId, entry) {
+export async function appendLearningLog(petId, entry, options = {}) {
+  const { cost = 0 } = options;
   const { data: pet, error: fetchError } = await supabase
     .from('pets')
-    .select('learning_logs')
+    .select('learning_logs, growth_points')
     .eq('id', petId)
     .single();
 
   if (fetchError) throw fetchError;
 
   const logs = Array.isArray(pet.learning_logs) ? pet.learning_logs : [];
+  const currentPoints = pet.growth_points ?? 0;
+  if (currentPoints < cost) {
+    throw new Error('成長ポイントが足りないよ！');
+  }
+
   const logEntry = {
     id: generateLogId(),
     created_at: new Date().toISOString(),
@@ -176,9 +182,12 @@ export async function appendLearningLog(petId, entry) {
 
   const { data, error } = await supabase
     .from('pets')
-    .update({ learning_logs: [...logs, logEntry] })
+    .update({
+      learning_logs: [...logs, logEntry],
+      growth_points: currentPoints - cost,
+    })
     .eq('id', petId)
-    .select('learning_logs')
+    .select('learning_logs, growth_points')
     .single();
 
   if (error) throw error;
