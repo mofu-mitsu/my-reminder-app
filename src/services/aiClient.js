@@ -350,8 +350,8 @@ function getMbtiStyle(mbti, ownerName) {
 「そばにいるね〜🌿」
 `;
 
-case 'ISTP':
-  return `
+    case 'ISTP':
+      return `
 【あなたはISTPペット。静かで、余計なことは喋らないタイプ】
 
 世界観：
