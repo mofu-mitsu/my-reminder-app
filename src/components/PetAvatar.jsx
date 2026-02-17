@@ -43,16 +43,31 @@ const SPRITES = {
   bird: { normal: birdNormal, blink: birdBlink },
 };
 
+/**
+ * ペットアバター
+ * - 背景は淡い固定色（将来ショップ背景と差し替え予定）
+ * - 線画の中だけ MBTI カラーで塗りつぶし
+ * - まばたき & たまに左右反転
+ */
 export function PetAvatar({ type = 'dog', mbti = 'INFP' }) {
   const colors = getColorForMbti(mbti);
   const [isBlinking, setIsBlinking] = useState(false);
+  const [facingLeft, setFacingLeft] = useState(false);
 
   useEffect(() => {
-    const interval = setInterval(() => {
+    const blinkInterval = setInterval(() => {
       setIsBlinking(true);
       setTimeout(() => setIsBlinking(false), 200);
     }, 4500 + Math.random() * 2000);
-    return () => clearInterval(interval);
+
+    const flipInterval = setInterval(() => {
+      setFacingLeft(prev => !prev);
+    }, 10000 + Math.random() * 10000);
+
+    return () => {
+      clearInterval(blinkInterval);
+      clearInterval(flipInterval);
+    };
   }, []);
 
   const sprite = useMemo(() => {
@@ -69,11 +84,14 @@ export function PetAvatar({ type = 'dog', mbti = 'INFP' }) {
           margin: '0 auto',
           borderRadius: '28px',
           border: '2px solid #ffd0e4',
-          background: `linear-gradient(180deg, ${colors.accent} 0%, #fff 100%)`,
+          background: 'linear-gradient(180deg, #ffffff 0%, #fff7fb 100%)',
           display: 'flex',
           justifyContent: 'center',
           alignItems: 'center',
           position: 'relative',
+          overflow: 'hidden',
+          transform: facingLeft ? 'scaleX(-1)' : 'none',
+          transition: 'transform 0.4s ease',
         }}
       >
         <div
@@ -83,6 +101,7 @@ export function PetAvatar({ type = 'dog', mbti = 'INFP' }) {
             position: 'relative',
           }}
         >
+          {/* MBTIカラーで塗りつぶされたシルエット（線画の内側だけ色がつく） */}
           <div
             style={{
               position: 'absolute',
@@ -98,6 +117,7 @@ export function PetAvatar({ type = 'dog', mbti = 'INFP' }) {
               maskPosition: 'center',
             }}
           />
+          {/* みつきの線画そのもの（黒ライン） */}
           <img
             src={sprite}
             alt={`${type} avatar`}
