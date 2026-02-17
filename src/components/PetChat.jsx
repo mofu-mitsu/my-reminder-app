@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { generatePetReply } from '../services/aiClient';
+import { PetAvatar } from './PetAvatar.jsx';
 
 const MAX_HISTORY = 8;
 
@@ -54,16 +55,27 @@ export function PetChat({ pet, ownerName }) {
       border: '1px solid #d0e8ff',
       backgroundColor: '#f0f7ff',
       textAlign: 'left',
+      display: 'grid',
+      gridTemplateColumns: 'minmax(0, 1.3fr) minmax(0, 2fr)',
+      gap: '16px',
     }}>
-      <h3>ペットと会話 💬</h3>
-      <div style={{
-        maxHeight: '260px',
-        overflowY: 'auto',
-        margin: '12px 0',
-        display: 'flex',
-        flexDirection: 'column',
-        gap: '10px',
-      }}>
+      <div style={{ borderRight: '1px dashed #c1d9ff', paddingRight: '12px', textAlign: 'center' }}>
+        <PetAvatar type={pet.type} mbti={pet.mbti} />
+        <p style={{ margin: '8px 0 4px', fontWeight: 'bold' }}>{pet.name}</p>
+        <p style={{ margin: 0, fontSize: '0.8em', color: '#666' }}>
+          {ownerName ? `${ownerName} のおともだち` : 'ご主人さま大好き'}
+        </p>
+      </div>
+      <div style={{ display: 'flex', flexDirection: 'column' }}>
+        <h3 style={{ marginTop: 0 }}>ペットと会話 💬</h3>
+        <div style={{
+          maxHeight: '260px',
+          overflowY: 'auto',
+          margin: '8px 0 12px',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '10px',
+        }}>
         {messages.map((msg, idx) => (
           <div
             key={idx}
@@ -81,8 +93,8 @@ export function PetChat({ pet, ownerName }) {
             {msg.content}
           </div>
         ))}
-      </div>
-      <form onSubmit={handleSend} style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+        </div>
+        <form onSubmit={handleSend} style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
         <input
           type='text'
           value={input}
@@ -109,8 +121,9 @@ export function PetChat({ pet, ownerName }) {
         >
           {loading ? '考え中…' : '送信'}
         </button>
-      </form>
-      {error && <p style={{ color: 'red', fontSize: '0.8em', marginTop: '8px' }}>{error}</p>}
+        </form>
+        {error && <p style={{ color: 'red', fontSize: '0.8em', marginTop: '8px' }}>{error}</p>}
+      </div>
     </div>
   );
 }
