@@ -75,3 +75,90 @@ body {
   gap: 20px;
 }
 
+/* 会話タブ：スマホでは縦並びで入力欄が隠れないようにする */
+.pet-chat-card {
+  padding: 20px;
+  border-radius: 16px;
+  border: 1px solid #d0e8ff;
+  background-color: #f0f7ff;
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.pet-chat-sidebar {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding-bottom: 12px;
+  border-bottom: 1px dashed #c1d9ff;
+  flex-shrink: 0;
+}
+
+.pet-chat-main {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  flex: 1;
+}
+
+.pet-chat-messages {
+  max-height: min(40vh, 280px);
+  overflow-y: auto;
+  margin: 8px 0 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 10px;
+}
+
+.pet-chat-form {
+  display: flex;
+  gap: 8px;
+  align-items: stretch;
+  flex-wrap: nowrap;
+}
+
+.pet-chat-input {
+  flex: 1;
+  min-width: 0;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid #bbb;
+  font-size: 16px;
+}
+
+.pet-chat-send {
+  flex-shrink: 0;
+  padding: 10px 16px;
+  border-radius: 10px;
+  border: none;
+  background-color: #2196f3;
+  color: white;
+  cursor: pointer;
+}
+
+@media (min-width: 640px) {
+  .pet-chat-card {
+    flex-direction: row;
+    align-items: flex-start;
+  }
+
+  .pet-chat-sidebar {
+    flex: 0 0 auto;
+    width: 200px;
+    padding-bottom: 0;
+    padding-right: 16px;
+    border-bottom: none;
+    border-right: 1px dashed #c1d9ff;
+  }
+
+  .pet-chat-main {
+    min-width: 0;
+  }
+}
+

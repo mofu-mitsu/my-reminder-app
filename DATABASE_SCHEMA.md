@@ -79,3 +79,35 @@ CREATE POLICY "Users can insert their own reminders" ON reminders
 CREATE POLICY "Users can update their own reminders" ON reminders
   FOR UPDATE USING (auth.uid() = user_id);
 ```
+
+## リマインダー category の CHECK 制約（エラー対処）
+
+アプリで使う `category` は次のとおりです。
+
+`water`, `medicine`, `shopping`, `walk`, `sleep`, `umbrella`, `focus`, `custom`
+
+Supabase で次のエラーが出る場合:
+
+`new row for relation "reminders" violates check constraint "reminders_category_check"`
+
+**原因**: テーブルの CHECK が上記リストより狭い（古い定義のまま）ため、例えば `focus` や `umbrella` を保存できない。
+
+**対処（SQL Editor で実行）**:
+
+```sql
+ALTER TABLE reminders DROP CONSTRAINT IF EXISTS reminders_category_check;
+
+ALTER TABLE reminders ADD CONSTRAINT reminders_category_check
+  CHECK (category IN (
+    'water',
+    'medicine',
+    'shopping',
+    'walk',
+    'sleep',
+    'umbrella',
+    'focus',
+    'custom'
+  ));
+```
+
+制約名が違う場合は、Supabase の Table Editor → `reminders` → Constraints で名前を確認してから `DROP` してください。

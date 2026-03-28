@@ -466,11 +466,15 @@ function buildPersonaPrompt(pet, ownerName) {
     .filter(Boolean)
     .join('\n- ');
 
-  const mbtiStyle = getMbtiStyle(mbti, owner);
+  const mbtiUpper = (mbti || 'INFP').toString().toUpperCase();
+  let mbtiStyle = getMbtiStyle(mbtiUpper, owner);
+  if (!mbtiStyle || !mbtiStyle.trim()) {
+    mbtiStyle = getMbtiStyle('DEFAULT', owner);
+  }
 
   return `
 あなたは ${owner} の相棒である ${type} のキャラクター「${name}」です。
-MBTI: ${mbti}
+MBTI: ${mbtiUpper}
 
 ${mbtiStyle}
 

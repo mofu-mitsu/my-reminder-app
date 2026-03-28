@@ -49,8 +49,18 @@ const SPRITES = {
  * - 線画の中だけ MBTI カラーで塗りつぶし
  * - まばたき & たまに左右反転
  */
-export function PetAvatar({ type = 'dog', mbti = 'INFP' }) {
+export function PetAvatar({
+  type = 'dog',
+  mbti = 'INFP',
+  backgroundGradient,
+  accessoryEmoji,
+  compact = false,
+}) {
   const colors = getColorForMbti(mbti);
+  const frameBg =
+    backgroundGradient
+    ?? 'linear-gradient(180deg, #ffffff 0%, #fff7fb 100%)';
+  const frameSize = compact ? 180 : 240;
   const [isBlinking, setIsBlinking] = useState(false);
   const [facingLeft, setFacingLeft] = useState(false);
 
@@ -79,12 +89,12 @@ export function PetAvatar({ type = 'dog', mbti = 'INFP' }) {
     <div style={{ textAlign: 'center' }}>
       <div
         style={{
-          width: '240px',
-          height: '240px',
+          width: `${frameSize}px`,
+          height: `${frameSize}px`,
           margin: '0 auto',
           borderRadius: '28px',
           border: '2px solid #ffd0e4',
-          background: 'linear-gradient(180deg, #ffffff 0%, #fff7fb 100%)',
+          background: frameBg,
           display: 'flex',
           justifyContent: 'center',
           alignItems: 'center',
@@ -131,6 +141,23 @@ export function PetAvatar({ type = 'dog', mbti = 'INFP' }) {
             }}
             draggable={false}
           />
+          {accessoryEmoji && (
+            <span
+              style={{
+                position: 'absolute',
+                top: '4%',
+                left: '50%',
+                transform: 'translateX(-50%)',
+                fontSize: '2rem',
+                lineHeight: 1,
+                filter: 'drop-shadow(0 2px 2px rgba(0,0,0,0.15))',
+                pointerEvents: 'none',
+              }}
+              aria-hidden
+            >
+              {accessoryEmoji}
+            </span>
+          )}
         </div>
       </div>
       <p style={{ marginTop: '8px', fontSize: '0.85em', color: '#666' }}>
