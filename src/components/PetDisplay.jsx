@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { updatePetName } from '../services/supabase';
 import { calculateMBTIScore } from '../utils/mbtiCalculator';
+import { getPetCosmeticsFromPet } from '../utils/petShopState';
 import { PetAvatar } from './PetAvatar.jsx';
 
 export function PetDisplay({ pet, ownerName }) {
@@ -40,6 +41,7 @@ export function PetDisplay({ pet, ownerName }) {
   };
 
   const { mbti, traits } = calculateMBTIScore(pet.mbti_params);
+  const { backgroundGradient, accessoryEmoji } = getPetCosmeticsFromPet(pet);
 
   return (
     <div style={{
@@ -96,7 +98,12 @@ export function PetDisplay({ pet, ownerName }) {
       <p style={{ color: '#999', marginTop: '-4px' }}>
         {ownerName ? `${ownerName} の相棒` : 'ご主人さま大好きだよ'}
       </p>
-      <PetAvatar type={pet.type} mbti={mbti} />
+      <PetAvatar
+        type={pet.type}
+        mbti={mbti}
+        backgroundGradient={backgroundGradient}
+        accessoryEmoji={accessoryEmoji}
+      />
 
       <p>成長ポイント: {pet.growth_points}</p>
       <p>性格(MBTI): {mbti}</p>

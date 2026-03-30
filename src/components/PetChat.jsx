@@ -1,10 +1,17 @@
-import React, { useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { generatePetReply } from '../services/aiClient';
 import { PetAvatar } from './PetAvatar.jsx';
+import { getPetCosmeticsFromPet } from '../utils/petShopState';
 
 const MAX_HISTORY = 8;
 
-export function PetChat({ pet, ownerName }) {
+export function PetChat({ pet, ownerName, userId }) {
+  const chatStorageKey = useMemo(
+    () => `petChatHistory:${userId ?? 'guest'}:${pet?.id ?? 'none'}`,
+    [userId, pet?.id],
+  );
+  const { backgroundGradient, accessoryEmoji } = getPetCosmeticsFromPet(pet);
+
   const [messages, setMessages] = useState([
     {
       role: 'assistant',
@@ -14,6 +21,33 @@ export function PetChat({ pet, ownerName }) {
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+
+  useEffect(() => {
+    if (!pet?.id) return;
+    const raw = localStorage.getItem(chatStorageKey);
+    if (!raw) {
+      setMessages([
+        {
+          role: 'assistant',
+          content: `${pet?.name ?? 'ペット'}だよ！${ownerName || 'ご主人さま'}、お話ししよ〜🧸`,
+        },
+      ]);
+      return;
+    }
+    try {
+      const parsed = JSON.parse(raw);
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        setMessages(parsed);
+      }
+    } catch {
+      localStorage.removeItem(chatStorageKey);
+    }
+  }, [chatStorageKey, pet?.id, pet?.name, ownerName]);
+
+  useEffect(() => {
+    if (!pet?.id || !Array.isArray(messages) || messages.length === 0) return;
+    localStorage.setItem(chatStorageKey, JSON.stringify(messages));
+  }, [chatStorageKey, messages, pet?.id]);
 
   if (!pet) {
     return (
@@ -51,7 +85,13 @@ export function PetChat({ pet, ownerName }) {
   return (
     <div className="pet-chat-card">
       <section className="pet-chat-sidebar">
-        <PetAvatar type={pet.type} mbti={pet.mbti} compact />
+        <PetAvatar
+          type={pet.type}
+          mbti={pet.mbti}
+          compact
+          backgroundGradient={backgroundGradient}
+          accessoryEmoji={accessoryEmoji}
+        />
         <p style={{ margin: '8px 0 4px', fontWeight: 'bold' }}>{pet.name}</p>
         <p style={{ margin: 0, fontSize: '0.8em', color: '#666' }}>
           {ownerName ? `${ownerName} のおともだち` : 'ご主人さま大好き'}

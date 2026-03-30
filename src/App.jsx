@@ -11,6 +11,7 @@ import { WeatherReminder } from './components/WeatherReminder.jsx';
 import { LearningLogPanel } from './components/LearningLogPanel.jsx';
 import { PetChat } from './components/PetChat.jsx';
 import { OwnerSettings } from './components/OwnerSettings.jsx';
+import { ShopPanel } from './components/ShopPanel.jsx';
 import { signOut, completeReminder, rewardPetForReminder } from './services/supabase';
 
 function ReminderList({ reminders, loading, error, petId, onRefresh, onPetUpdate }) {
@@ -87,6 +88,7 @@ const tabs = [
   { id: 'reminders', label: 'リマインダー' },
   { id: 'learning', label: '学習' },
   { id: 'chat', label: '会話' },
+  { id: 'shop', label: 'ショップ' },
 ];
 
 const LEARNING_COST = 3;
@@ -178,9 +180,19 @@ function App() {
         {activeTab === 'chat' && (
           <>
             {petForChat ? (
-              <PetChat pet={petForChat} ownerName={ownerName} />
+              <PetChat pet={petForChat} ownerName={ownerName} userId={user?.id} />
             ) : (
               <p>ペットを読み込み中…</p>
+            )}
+          </>
+        )}
+
+        {activeTab === 'shop' && (
+          <>
+            {pet ? (
+              <ShopPanel pet={pet} onUpdated={refreshPet} />
+            ) : (
+              <p>ペット情報を読み込み中…</p>
             )}
           </>
         )}

@@ -162,3 +162,68 @@ body {
   }
 }
 
+.shop-panel {
+  text-align: left;
+  padding: 18px;
+  border: 1px solid #ffd5ea;
+  border-radius: 16px;
+  background: #fff9fd;
+}
+
+.shop-point {
+  margin-top: 0;
+  color: #8e24aa;
+  font-weight: 600;
+}
+
+.shop-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.shop-card {
+  border: 1px solid #f2d5e4;
+  border-radius: 12px;
+  padding: 10px;
+  background: #fff;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.shop-card p {
+  margin: 0;
+  font-size: 0.8em;
+  color: #666;
+}
+
+.shop-thumb {
+  font-size: 1.6rem;
+}
+
+.shop-btn {
+  margin-top: auto;
+  padding: 8px 10px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  background: #ff69b4;
+  color: #fff;
+}
+
+.shop-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.shop-btn-secondary {
+  background: #8e8e8e;
+}
+
+.shop-status {
+  margin-top: 8px;
+  font-size: 0.85em;
+}
+
